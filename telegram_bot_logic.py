@@ -22,7 +22,7 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands="start")
 async def start(message: types.Message):
-    start_buttons = ["🔪 Knives", "🧤 Gloves", "︻デ═一 Sniper Rifles"]
+    start_buttons = ["🔪 Knives", "🧤 Gloves", "︻デ═一 Sniper Rifles", "︻┳═一 Assault Rifles"]
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*start_buttons)
 
@@ -97,5 +97,27 @@ async def get_discount_sniper_rifles(message: types.Message):
 
         await message.answer(card)
 
+
+@dp.message_handler(Text(equals="︻┳═一 Assault Rifles"))
+async def get_discount_assault_rifles(message: types.Message):
+    await message.answer("Please waiting...")
+
+    collect_data(cat_type=3)
+
+    with open("result.json", encoding="utf8") as file:
+        data = json.load(file)
+
+    for index, item in enumerate(data):
+        card = (
+            f"{hlink(item.get('full_name'), item.get('steam_image'))}\n"
+            f"{hbold('Discount: ')}{item.get('discount')}%\n"
+            f"{hbold('Price: ')}${item.get('price')}🔥"
+            f"{hbold('3D: ')}{item.get('3d')}"
+        )
+
+        if index % 20 == 0:
+            time.sleep(3)
+
+        await message.answer(card)
 
 executor.start_polling(dp)
